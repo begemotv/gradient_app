@@ -1,6 +1,9 @@
 import {useState, useEffect} from 'react';
-import Input from './components/input/input';
+import styled, {createGlobalStyle} from 'styled-components';
+
+import ButtonAdd from './components/button-add/button-add';
 import GradientList from './components/gradient-list/gradient-list';
+import Input from './components/input/input';
 
 const App = () => {
     const [input, setInput] = useState({
@@ -24,12 +27,12 @@ const App = () => {
             ...input,
             [name]: value
         });
-    }
+    };
 
     const handleGradientAdd = (evt) => {
         evt.preventDefault();
         setGradients([...gradients, {
-            id: gradients.length,
+            id: Date.now(),
             hexColors: [input.colorStart, input.colorEnd]
         }]);
         setInput({
@@ -37,17 +40,18 @@ const App = () => {
             colorEnd: ''
         });
         setIsValid(false);
-    }
+    };
 
     const handleGradientDelete = (id) => {
         const gradientsUpdated = gradients.filter(item => item.id !== id);
         setGradients(gradientsUpdated);
-    }
+    };
 
     return (
-        <>
-            <h1>Gradient App</h1>
-            <form onSubmit={(evt) => handleGradientAdd(evt)}>
+        <AppWrapper>
+            <GlobalStyle />
+            <Title>Gradient App</Title>
+            <Form onSubmit={(evt) => handleGradientAdd(evt)}>
                 <Input
                     value={input.colorStart}
                     name={'colorStart'}
@@ -58,11 +62,43 @@ const App = () => {
                     name={'colorEnd'}
                     onInputChange={handleInputChange}
                 />
-                <button type="submit" disabled={!isValid}>Add Gradient</button>
-                <GradientList gradients={gradients} onDeleteClick={handleGradientDelete} />
-            </form>
-        </>
+                <ButtonAdd isValid={isValid} />
+            </Form>
+            <GradientList gradients={gradients} onDeleteClick={handleGradientDelete} />
+        </AppWrapper>
     );
-}
+};
+
+const GlobalStyle = createGlobalStyle`
+  body{
+    margin: 0;
+    background-color: black;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+  };
+`;
+
+const AppWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const Title = styled.h1`
+    margin: 50px auto 50px auto;
+    text-transform: uppercase;
+    font-size: 28px;
+    letter-spacing: 15px;
+`;
+
+const Form = styled.form`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+
+    @media(min-width: 768px) {
+        flex-direction: row;
+    };
+`;
 
 export default App;
